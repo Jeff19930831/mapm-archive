@@ -30,7 +30,7 @@ projects:
     archive: keep
     owner: claude
     type: 大项目（采购数据处理总管，下辖多个子项目）
-    repo: 内置 Git
+    repo: "[procurement-data-analysis](https://github.com/Jeff19930831/procurement-data-analysis)"
     docs: "采购数据处理/"
     code_path: "—"
     last_handoff: "handoff.md"
