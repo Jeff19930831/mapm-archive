@@ -25,16 +25,31 @@ projects:
     last_handoff: "HANDOFF.md"
     last_update: "2026-04-27"
 
-  procurement-charts:
+  采购数据处理:
+    status: 运行中
+    archive: keep
+    owner: claude
+    type: 大项目（采购数据处理总管，下辖多个子项目）
+    repo: 内置 Git
+    docs: "采购数据处理/"
+    code_path: "—"
+    last_handoff: "handoff.md"
+    last_update: "2026-07-01"
+    subprojects:
+      - 季度图表总结
+
+  季度图表总结:
     status: 已完成
     archive: keep
     owner: claude
     type: Python 数据可视化
+    parent: 采购数据处理
+    alias: procurement-charts
     repo: "[procurement-charts](https://github.com/Jeff19930831/procurement-charts)"
-    docs: "Win_Claude_Work/procurement-charts/"
-    code_path: "D:\\ClaudeCode\\procurement-charts"
+    docs: "procurement-charts/"
+    code_path: "D:\\workspace\\procurement-charts"
     last_handoff: "HANDOFF.md"
-    last_update: "2026-04-27"
+    last_update: "2026-07-01"
 
   wechat-chat-history:
     status: 运行中
@@ -98,7 +113,7 @@ projects:
     type: 本地量化金融模型
     repo: "—"
     docs: "quant-model/"
-    code_path: "C:\Users\lk\quant-qwen-finance"
+    code_path: "C:\\Users\\lk\\quant-qwen-finance"
     last_handoff: "handoff.md"
     last_update: "2026-05-11"
 
