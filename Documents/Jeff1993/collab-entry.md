@@ -1,7 +1,8 @@
 # Jeff1993 协作入口（collab-entry）
 
-> 版本: v3.13 / 2026-06-05
+> 版本: v3.16 / 2026-06-14
 > 目的：所有设备、所有 Agent 接力开发的人工统一入口。根目录 `README.md` 仍是自动生成的项目 dashboard，不作为人工规则入口。
+> v3.16 改动: MAPM 综合优化 — (1) 通用配置地基（`.gitattributes` + `.editorconfig` + `scripts/_platform.py` 统一 `rel_posix`/`read_text_utf8`（容忍 BOM）/`write_text_lf`（强制 LF），10 个治理脚本迁移收口）；(2) 共享文案单一源（新增 `docs/sop/agentmemory-mcp-usage.md`，7 处 Doc Lifecycle Gate 块 + Memory curl 模板改为引用）；(3) Codex 双轨合并（4 个镜像压缩为指针 + 2 个 ext 改差异化段，secret gate 从 fail-closed 修正为警告对齐 Claude 版）；(4) checkpoint 拆 3 子 skill（`checkpoint-archive`/`checkpoint-memory`/`checkpoint-git`）+ 主流程编号重排为连续 1-16 步，con-dev Phase 2.5 复用 `checkpoint-memory` Recall；(5) 新增 `agent-handoff` skill（同设备异 agent 交接，生成临时文件）；(6) `deep-search` 参数化（移除 wechat-macro-kb 硬编码，改 env var 协议，任何项目可适配）。
 > v3.8 改动: checkpoint 新增 Memory Hooks（Step 2.5 Recall + Step 5.7 Store），每次 checkpoint 自动与云端 agentmemory 双向同步项目状态和 secret 引用；cloud-memory 项目落地（agentmemory v0.9.21 部署在腾讯云 43.133.86.33:3111）。默认不写真实 secret payload。
 > v3.8.1 改动: con-dev 新增 Phase 2.5 Memory Recall（会话启动时搜索云端记忆）；AGENTS.md 增加记忆使用规则（三层读取：L1 冷启动/L2 周期同步/L3 即时查询）；新增 `troubleshoot:<name>` scope 用于排障记录。
 > v3.9 改动: 新增 Doc Lifecycle Gate。入口文档只回答”现在怎么接手”，历史文档回答”以前为什么这么做”，runbook 回答”常见问题怎么安全处理”；checkpoint 和所有 onboarding/skill 都必须遵守入口短、历史归档、runbook 承载常驻问题。
@@ -9,6 +10,8 @@
 > v3.11 改动: 明确当前四文档以小写 `README.md` / `plan.md` / `progress.md` / `handoff.md` 为主；旧大写入口仅作兼容/历史镜像，checkpoint 前必须优先刷新小写入口。
 > v3.12 改动: agent-kit 同步工具落地（`scripts/agent_kit_sync.py`，manifest `skill_sync` 驱动，4 目标目录）；`Skill/` 废弃为指针；`项目规范.md` 归档，独特内容迁移到 `docs/sop/`；§ 7 新增 § 7.0 同步工具；skill 表增加 `deep-search` / `session-handoff`；con-dev Memory Recall 增加 MCP 优先。
 > v3.13 改动: § 1 补齐云端记忆基础常识（单一共享云端不分设备/版本铁律 agentmemory↔iii-sdk↔iii引擎/NSSM 服务恢复）与基础设施网络访问坑（Clash 全局 TUN 走不稳定节点 → DIRECT 规则 + SSH 连接复用）；新增 `docs/sop/cloud-memory-and-network.md` 故障手册；落点项目 `cloud-memory` / `clash-governance`。
+> v3.14 改动: agentmemory MCP 客户端配置标准升级为"直连 node"——`npm i -g @agentmemory/mcp` 后 MCP command 直接用 node 调 `bin.mjs`，弃用 `npx -y`（冷启动联网下载 = 客户端抖动主因）；`AGENTMEMORY_FORCE_PROXY=1` 为强制项（不设则 livez 探测失败会静默回退本地 InMemoryKV，记忆分叉）。推荐配置块见 `cloud-memory/handoff.md`；init-agent skill Step 6.5 已按新标准更新。
+> v3.15 改动: checkpoint Step 7/7.1 改为按项目范围 staging（禁用 `git add -A`/`git add .`、排除 `.obsidian/`、新增 `.py` 用 `git add -f`），避免共享文档仓跨项目串味；checkpoint Step 2.5/5.7 Memory Recall/Store 改 MCP-first（curl 回退）；新增 `docs/sop/windows-python-setup.md`（Windows `python3` shim，让 skill 的 `python3` 调用跨平台可用）；governance_lint / build_governance_graph 修 Windows 路径分隔符（`.as_posix()`）；agent-kit manifest 债务清理（`scan_debt` 通用化，sync 只声明有源类别）。
 
 ## 0. 新 Agent 先读这 5 步
 
@@ -32,6 +35,7 @@
 - **云端记忆 (agentmemory)**：checkpoint 时自动与云端记忆双向同步。Step 2.5 拉取项目相关记忆为 handoff 刷新提供上下文；Step 5.7 写入项目状态和 secret 引用（`project:<name>` / `credentials:<name>` / `decision:<name>`），供跨设备/跨 session agent 搜索使用。默认不写真实 secret payload；只有认证、HTTPS、allowlist 和用户明确授权同时满足时才另行登记。服务地址：`http://43.133.86.33:3111`。
   - **单一共享云端，不分设备/不分 agent**：某设备搜不到别的设备写的记忆 = 该设备配置错了（多半在写本地），不是"按设备隔离"。验证 `curl …/livez`；端点用 `livez`/`search`/`remember`（`status`/`memories` 不可用）；关键词 search 有几分钟索引延迟（非故障）。
   - **版本铁律**：服务器 `agentmemory ↔ iii-sdk ↔ iii 引擎` 必须配套；iii 引擎默认后台自动更新，自升到不兼容版本会让 `/agentmemory/*` 全 404、所有设备退回本地。
+  - **客户端配置标准（v3.14 / 2026-06-12 起）**：MCP 一律 `npm i -g @agentmemory/mcp` 后用 node 直调全局 `bin.mjs`，弃用 `npx -y`（冷启动联网下载 = 抖动主因）；`AGENTMEMORY_FORCE_PROXY=1` 强制保留——不设时 livez 探测失败会**静默回退本地** `~/.agentmemory/standalone.json`，记忆分叉且云端搜不到。推荐配置块见 `cloud-memory/handoff.md`，新设备入职由 init-agent skill Step 6.5 按此检查。
   - 故障"全设备记忆互不可见" / 服务恢复（NSSM 服务 `iii-engine`+`agentmemory-worker`）→ 见 [`docs/sop/cloud-memory-and-network.md`](docs/sop/cloud-memory-and-network.md) 与 `cloud-memory/` 项目。
 - **基础设施网络访问（Clash/VPN）**：到自有服务器 IP（如 agentmemory `43.133.86.33`）若被全局 TUN 代理走不稳定节点，会出现 SSH 卡死 / HTTP 抖动。持久解：Clash 加 `IP-CIDR,<ip>/32,DIRECT`（见 `clash-governance`）；SSH 用连接复用+保活（`~/.ssh/config` ControlMaster）。详见 [`docs/sop/cloud-memory-and-network.md`](docs/sop/cloud-memory-and-network.md) § 5。
 - **规则**：Obsidian 让文件到达；Git checkpoint 记录可信状态；云端记忆让 agent 跨设备记住项目上下文。
@@ -222,21 +226,35 @@ skill 会自动完成全部五阶段：`git pull` → 解析 YAML（含 `code_pa
 | skill | 作用 | 触发 |
 |---|---|---|
 | `con-dev` | 跨设备/新会话接力（精准读取，省 ~9K tokens） | `/con-dev +<项目>` |
-| `checkpoint` | 收工 (含 onboarding 自检) | `/checkpoint` |
+| `checkpoint` | 收工（编排 3 子 skill：archive/memory/git） | `/checkpoint` |
+| `checkpoint-archive` | 子 skill：Plan→Progress 归档 + Doc Lifecycle Gate | 被 checkpoint 编排 |
+| `checkpoint-memory` | 子 skill：Memory Recall（可被 con-dev/agent-handoff 复用）+ Store | 被 checkpoint 编排 |
+| `checkpoint-git` | 子 skill：Secret gate + Governance lint + 双仓 commit/push | 被 checkpoint 编排 |
 | `init-onboarding` | 一次性接入大型附加层 | `/init-onboarding [--small\|--large\|--upgrade]` |
 | `adr` | 起草决策记录 | `/adr [<slug>]` |
 | `refresh-onboarding` | 中途轻量刷新 | `/refresh-onboarding` |
 | `init-agent` | 新设备 Agent 初始化 | `/init-agent` |
-| `deep-search` | 多源深度搜索 | `/deep-search <topic>` |
-| `session-handoff` | 同设备 session 续接 | "切 session 继续" |
+| `deep-search` | 多源深度搜索（通用，需项目提供 search 模块协议） | `/deep-search <topic>` |
+| `session-handoff` | 同设备**同 agent** session 续接（dry-run） | "切 session 继续" |
+| `agent-handoff` | 同设备**异 agent** 交接（claude→codex 等，生成临时文件） | "交接给 codex/kimi/gemini" |
+| `kdocs` | 金山文档 / WPS 云文档操作（kdocs-cli）：新建/读取/编辑/搜索/分享在线文档、AI PPT、PDF、知识库 | 任务涉及金山/WPS 云文档时自动触发 |
 
 源: [`agent-kit/claude/skills/`](agent-kit/claude/skills/)
+
+> **kdocs 依赖**：需 `kdocs-cli`（`node scripts/setup.cjs` / `powershell scripts/setup.ps1` 从 CDN 装到 `%LOCALAPPDATA%\kdocs-cli`，自动加 PATH）+ Token。Token 优先级：`--token` > `KINGSOFT_DOCS_TOKEN` 环境变量 > 系统密钥链（`kdocs-cli auth set-token`）。密钥链不可用时用 User 环境变量 `KINGSOFT_DOCS_TOKEN`（本机已配）。
+>
+> `KINGSOFT_DOCS_TOKEN`（明文，私有仓）：
+> ```
+> ntE7Ru4U3Kd87AVHYIeuo5fK9aPQ8AON9630ALox+tA7Ak6OYDAlyA1n9HIPVhWcAEJdV1UEo7Q3ob9BxVepIeLLXssUPC695yByQ5Mzd6fXayCbUJr53oN+pNnDzLsjtgRs4d/gK727ExFNQqW5LJy+leucyDkAbYGYy14X9ZbtOS7OOP4IomUjek9WpDHTFzlm3S25WEksXCsLtg==
+> ```
 同步工具: `python3 scripts/agent_kit_sync.py --apply`（manifest 驱动，跨平台，部署到 4 目标目录）
 手动安装: `cp <src> ~/.agents/skills/<name>/SKILL.md`，若客户端不扫描通用目录，再回退到 `~/.claude/skills/<name>/SKILL.md`
 
 ### Codex (skills/<name>/SKILL.md)
 
 行为与 Claude 同, 通过 prompt 触发。源: [`agent-kit/codex/skills/`](agent-kit/codex/skills/)
+
+**Codex 双轨状态（v3.16 合并后）**：4 个近镜像 skill（adr/init-onboarding/refresh-onboarding/session-handoff）已压缩为指针（保留触发词 + 流程骨架 + 引用 Claude 版）；2 个 ext skill（checkpoint-onboarding-ext/con-dev-onboarding-ext）改为差异化段（保留 Codex 特有步骤，Memory/Gate/secret 改引用单一源，secret gate 已从 fail-closed 修正为警告对齐 Claude 版）。
 
 **当前 Codex 优先走通用目录**：`~/.agents/skills/<name>/SKILL.md`。若当前运行时不扫描通用目录，再回退到目录式 `~/.codex/skills/<name>/SKILL.md`。根目录 `~/.codex/skills/<name>.md` 仅作源/通用 Markdown 复用, 不会出现在当前 Codex Skills 列表中。
 
