@@ -1,11 +1,13 @@
 # clash-governance
 
-Obsidian-visible entry for the Clash Verge strategy and node governance project.
+Obsidian-visible pointer for the Clash Verge strategy and node governance project.
 
-Source of truth:
+- Source of truth: `D:\Workspace\clash-governance`
+- Private remote: `https://github.com/Jeff19930831/clash-governance`
+- Current takeover: `D:\Workspace\clash-governance\handoff.md`
+- Completed evidence: `D:\Workspace\clash-governance\progress.md`
+- Latest checkpoint: 2026-08-12
 
-- Local repo: `D:\Workspace\clash-governance`
-- Remote repo: `https://github.com/Jeff19930831/clash-governance`
-- Current handoff: `handoff.md`
+Keep this folder concise. Full node records, runbooks, migration evidence, and rollback details belong in the source repository.
 
-Use this folder to find the project from Obsidian. Use the local repo for full node records, runbooks, checkpoint commits, and live-change evidence.
+

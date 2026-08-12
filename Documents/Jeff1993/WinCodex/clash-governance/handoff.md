@@ -1,35 +1,31 @@
-# handoff
-
-## Persistent Context
-
-`clash-governance` controls future Clash Verge strategy and node changes for this Windows machine.
-
-The durable source of truth is `D:\Workspace\clash-governance`. This Obsidian folder is a short pointer so the project appears in Jeff1993/Obsidian navigation.
+# clash-governance pointer
 
 ## Current Takeover
 
-- Active routing intent: Claude and Anthropic traffic routes through `Claude-Anthropic SOCKS5`.
-- Code repo: `D:\Workspace\clash-governance`
-- Remote: `https://github.com/Jeff19930831/clash-governance`
-- Latest checkpoint refresh: 2026-06-05
+- Authority repo: `D:\Workspace\clash-governance`
+- Active Windows profile: the clean `雕云` profile migrated on 2026-08-12.
+- Governed behavior: DNS/merge policy, priority rules, custom proxy, and conditional domain-group script are bound to the active profile.
+- The previous remote profile is retained only as forensic/rollback reference.
+- Full current mapping, risks, verification, and rollback evidence: `D:\Workspace\clash-governance\handoff.md` and `progress.md`.
+
+## Latest Result
+
+- All five enhancements were migrated to the active profile.
+- The empty Netflix auto-test-group failure was fixed by conditional group creation.
+- Both generated configs passed Mihomo validation and were hot-reloaded.
+- The existing dedicated SOCKS5 remained alive and usable; no endpoint or credential update was required.
 
 ## Next
 
-- For future Clash edits, update the code repo first or immediately after the live change.
-- Keep this pointer folder short; detailed evidence belongs in the code repo `progress.md`.
+- Run every future profile, node, DNS, or routing edit through `D:\Workspace\clash-governance\docs\runbooks\clash-change-control.md`.
+- Keep this pointer short; append detailed evidence only in the authority repo.
 
 ## Blockers
 
-- No active blocker.
+- None for the Windows authority repo.
 
-## Verification
+## Historical Note
 
-- Obsidian pointer directory created on 2026-06-05.
-- Live Clash config and Mihomo config test evidence are recorded in `D:\Workspace\clash-governance\progress.md`.
+Mac-side 2026-07-03 and 2026-07-23 Clash fixes remain in this pointer's `progress.md` until reconciled into a cross-device governance record.
 
-## Index
 
-- `README.md`: pointer entry
-- `plan.md`: pointer maintenance plan
-- `progress.md`: Obsidian visibility history
-- `D:\Workspace\clash-governance\handoff.md`: full project handoff
