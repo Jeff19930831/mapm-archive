@@ -4,25 +4,27 @@
 
 - Authority repo: `D:\Workspace\clash-governance`
 - Active Windows profile: the clean `雕云` profile migrated on 2026-08-12.
-- Governed behavior: DNS/merge policy, priority rules, custom proxy, and conditional domain-group script are bound to the active profile.
+- Governed behavior: DNS/merge policy, priority rules, custom proxy, conditional domain-group script, and exact WeChat Official Account DIRECT rules are bound to the active profile.
 - The previous remote profile is retained only as forensic/rollback reference.
 - Full current mapping, risks, verification, and rollback evidence: `D:\Workspace\clash-governance\handoff.md` and `progress.md`.
 
 ## Latest Result
 
-- All five enhancements were migrated to the active profile.
-- The empty Netflix auto-test-group failure was fixed by conditional group creation.
-- Both generated configs passed Mihomo validation and were hot-reloaded.
-- The existing dedicated SOCKS5 remained alive and usable; no endpoint or credential update was required.
+- Added exact DIRECT rules for the WeChat API, operator backend, and developer portal.
+- Both generated configs passed Mihomo validation; runtime inspection returned three target Domain -> DIRECT rules.
+- Direct egress was verified and WeWrite created the requested draft successfully.
+- Persistent WeWrite AppID/AppSecret fields were cleared after publishing; the disclosed AppSecret still needs rotation before reuse.
 
 ## Next
 
-- Run every future profile, node, DNS, or routing edit through `D:\Workspace\clash-governance\docs\runbooks\clash-change-control.md`.
+- Rotate the disclosed WeChat AppSecret before the next publish and recheck the DIRECT public IP against the official-account allowlist.
+- Use D:\Workspace\clash-governance\docs\runbooks\wechat-official-account-direct.md for publishing preflight and clash-change-control.md for live routing edits.
 - Keep this pointer short; append detailed evidence only in the authority repo.
 
 ## Blockers
 
-- None for the Windows authority repo.
+- User/backend action remains: rotate the disclosed WeChat AppSecret.
+- The direct public IP can change after an ISP reconnect and invalidate the allowlist.
 
 ## Historical Note
 

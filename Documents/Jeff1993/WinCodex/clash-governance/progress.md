@@ -84,3 +84,13 @@ TDS_DIRECT=0 npm run auto
 - Fixed the empty Netflix `url-test` construction, validated both generated configs, and hot-reloaded Mihomo.
 - Reverified the existing dedicated SOCKS5 as alive and usable; no endpoint or credential update was required.
 - Full migration, verification, rollback, and checkpoint evidence: `D:\Workspace\clash-governance\progress.md`.
+
+## 2026-08-27 WeChat Official Account DIRECT checkpoint
+
+- Added exact DIRECT routing for the WeChat API, operator backend, and developer portal in the authority repository.
+- Verified both generated configs, named-pipe runtime rules, direct HTTPS transport, and the 10-file rollback snapshot.
+- Verified WeWrite run 20260827-155208-af235c completed and created the requested draft.
+- Cleared the persistent WeWrite AppID/AppSecret fields after Secret Gate detected them; no credential payload was added to Git or pointer docs.
+- The disclosed AppSecret must be rotated before reuse, and the DIRECT public IP must be rechecked before the next publish.
+- Authority repository checkpoint: 0133648.
+- Full rules, runbook, verification, and rollback evidence: D:\Workspace\clash-governance\progress.md.

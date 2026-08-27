@@ -6,7 +6,7 @@ Obsidian-visible pointer for the Clash Verge strategy and node governance projec
 - Private remote: `https://github.com/Jeff19930831/clash-governance`
 - Current takeover: `D:\Workspace\clash-governance\handoff.md`
 - Completed evidence: `D:\Workspace\clash-governance\progress.md`
-- Latest checkpoint: 2026-08-12
+- Latest checkpoint: 2026-08-27
 
 Keep this folder concise. Full node records, runbooks, migration evidence, and rollback details belong in the source repository.
 
