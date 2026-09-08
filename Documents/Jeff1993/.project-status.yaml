@@ -36,6 +36,18 @@ projects:
     last_handoff: "HANDOFF.md"
     last_update: "2026-04-27"
 
+  jianlong-ppt:
+    status: 运行中
+    archive: keep
+    owner: codex
+    type: 建龙企业PPT模板、创作方法与WPS交付技能包
+    repo: "[jianlong-ppt](https://github.com/Jeff19930831/jianlong-ppt)"
+    docs: "jianlong-ppt/"
+    code_path: "D:\\Workspace\\jianlong-ppt"
+    data_path: "D:\\建龙"
+    last_handoff: "handoff.md"
+    last_update: "2026-09-08"
+
   wechat-chat-history:
     status: 运行中
     archive: keep
@@ -98,7 +110,7 @@ projects:
     type: 本地量化金融模型
     repo: "—"
     docs: "quant-model/"
-    code_path: "C:\Users\lk\quant-qwen-finance"
+    code_path: "C:\\Users\\lk\\quant-qwen-finance"
     last_handoff: "handoff.md"
     last_update: "2026-05-11"
 
